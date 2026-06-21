@@ -1,3 +1,3 @@
-# Test Wright
+# test-wright
 
-A minimal testing engine with a runnable test framework.
+A simple and intuitive interface to configure TestGenie settings.
