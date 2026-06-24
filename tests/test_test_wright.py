@@ -1,21 +1,34 @@
-from src.test_wright import TestWright, TestCase
+from test_wright import TestWright, TestResult
+import json
+import os
 
-def test_add_test_case():
+def test_trigger_test():
     test_wright = TestWright()
-    test_case = TestCase("hello-world", "A simple hello world test case")
-    test_wright.add_test_case(test_case)
-    assert len(test_wright.test_cases) == 1
+    test_result = test_wright.trigger_test("passing_test")
+    assert test_result.test_name == "passing_test"
+    assert test_result.result
 
-def test_run_test_cases():
+def test_trigger_failing_test():
     test_wright = TestWright()
-    test_case = TestCase("hello-world", "A simple hello world test case")
-    test_wright.add_test_case(test_case)
-    test_wright.run_test_cases()
-    # Check that the test case was run successfully
-    assert True  # Replace with a concrete assertion
+    test_result = test_wright.trigger_test("failing_test")
+    assert test_result.test_name == "failing_test"
+    assert not test_result.result
 
-def test_run_test_cases_empty():
+def test_store_test_results():
     test_wright = TestWright()
-    test_wright.run_test_cases()
-    # Check that no test cases were run
-    assert len(test_wright.test_cases) == 0
+    test_wright.trigger_test("passing_test")
+    test_wright.trigger_test("failing_test")
+    test_wright.store_test_results()
+    with open("test_results.json", "r") as f:
+        test_results = json.load(f)
+    assert len(test_results) == 2
+    assert test_results[0]["test_name"] == "passing_test"
+    assert test_results[0]["result"]
+    assert test_results[1]["test_name"] == "failing_test"
+    assert not test_results[1]["result"]
+    os.remove("test_results.json")
+
+def test_get_integration_docs():
+    test_wright = TestWright()
+    integration_docs = test_wright.get_integration_docs()
+    assert integration_docs == "Integration documentation for common CI/CD systems"
